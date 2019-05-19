@@ -15,6 +15,7 @@ link_directories(${LUA_LIBRARIES})
 
 add_library(Pick4 STATIC
   Pick4.cpp
+  Scene.cpp
   BitmapFont.cpp
 )
 
