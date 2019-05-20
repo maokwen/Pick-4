@@ -30,65 +30,105 @@ ConsoleScene& ConsoleScene::instance() {
   return instance;
 }
 
-void ConsoleScene::text(const std::string& str, int x, int y, Color c) {
+void ConsoleScene::print(const std::string& str, Color c) {
   SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
   auto font = BitmapFont(renderer_);
 
   for (auto ch : str) {
-    font.render(x, y, ch);
-    if (x >= Pick4::screen_height - BitmapFont::chat_size) {
-      x = 0;
-      y += BitmapFont::chat_size;
+    if (ch == '\n' || cursor_.x >= Pick4::screen_height - BitmapFont::chat_size) {
+      cursor_.x = 0;
+      cursor_.y += BitmapFont::chat_size;
     }
-    else { x += BitmapFont::chat_size; }
+    else {
+      cursor_.x += BitmapFont::chat_size;
+    }
+
+    font.render(cursor_.x, cursor_.y, ch);
   }
 }
 
-bool ConsoleScene::run() {
+
+void ConsoleScene::exec(std::string command) {
+  std::vector<std::string> argc;
+
+  if (command.empty())return;
+
+  std::string buf;
+  std::stringstream ss(command);
+  while (ss >> buf) argc.push_back(command);
+
+  if (argc[0] == "cls") {
+    cls();
+  }
+  else if (argc[0] == "run") { next_ = scene_display; }
+  else {
+    print("\nCommand not found.");
+    print("\n>");
+  }
+
+  input_buffer_.clear();
+}
+
+scene_type ConsoleScene::run() {
   SDL_SetRenderTarget(renderer_, target_);
   cls();
   SDL_StartTextInput();
 
-  bool quit = false;
+
   SDL_Event event;
-  while (!quit) {
+  for (next_ = scene_console; next_ == scene_console;) {
     SDL_Delay(20);
 
     SDL_SetRenderTarget(renderer_, nullptr);
     SDL_RenderCopy(renderer_, target_, nullptr, nullptr);
     SDL_RenderPresent(renderer_);
 
+    SDL_SetRenderTarget(renderer_, target_);
+
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_QUIT:
-        quit = true;
+        next_ = scene_exit;
+        break;
       case SDL_TEXTINPUT: {
         SDL_SetRenderTarget(renderer_, target_);
-        if (row >= Pick4::screen_width - 2 * BitmapFont::chat_size) { row = 0, col += BitmapFont::chat_size; }
-        text(std::string(event.text.text), row += BitmapFont::chat_size, col, Color{0xff, 0xff, 0x00});
-      } break;
-      case SDL_KEYDOWN:
-        if (event.key.keysym.sym == SDLK_ESCAPE) {
-          exit();
-          return false;
+        if (cursor_.x >= Pick4::screen_width - 2 * BitmapFont::chat_size) {
+          cursor_.x = 0, cursor_.y += BitmapFont::chat_size;
         }
+        print(std::string(event.text.text));
+        input_buffer_ += event.text.text;
+        std::cout << input_buffer_ << std::endl;
+      }
+      break;
+      case SDL_KEYDOWN: {
+        switch (event.key.keysym.sym) {
+        case SDLK_ESCAPE:
+          next_ = scene_editor;
+          break;
+        case SDLK_RETURN: 
+          std::cout << "ENTER" << std::endl;
+          exec(input_buffer_);
+          break;
+        }
+      }
+      break;
       }
     }
   }
 
-  return true;
-}
-
-void ConsoleScene::exit() {
+  input_buffer_.clear();
   SDL_SetRenderTarget(renderer_, nullptr);
   SDL_StopTextInput();
+  return next_;
 }
+
 
 void ConsoleScene::cls() {
   Scene::cls();
-  text(std::string("> "), 0, 0, Color{0xff, 0xff, 0x00});
-  row = 0;
-  col = 0;
+
+  cursor_.x = 0;
+  cursor_.y = 0;
+  print(">");
 }
 
 DisplayScene::DisplayScene(): Scene() {}
@@ -157,14 +197,14 @@ void DisplayScene::circle(int x, int y, int r, Color c) {
   }
 }
 
-bool DisplayScene::run() {
+scene_type DisplayScene::run() {
   SDL_SetRenderTarget(renderer_, target_);
   draw_();
   SDL_SetRenderTarget(renderer_, nullptr);
 
-  bool quit = false;
+  bool exit = false;
   SDL_Event event;
-  while (!quit) {
+  while (!exit) {
     SDL_Delay(20);
 
     SDL_SetRenderTarget(renderer_, target_);
@@ -176,19 +216,15 @@ bool DisplayScene::run() {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_QUIT:
-        quit = true;
+        exit = true;
         break;
       case SDL_KEYDOWN:
-        if (event.key.keysym.sym == SDLK_ESCAPE) {
-          exit();
-          return false;
-        }
+        if (event.key.keysym.sym == SDLK_ESCAPE) { return scene_console; }
       }
     }
   }
 
-  return true;
+  return scene_exit;
 }
 
-void DisplayScene::exit() {}
 void DisplayScene::cls() { Scene::cls(); }
