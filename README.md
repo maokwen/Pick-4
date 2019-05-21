@@ -3,7 +3,7 @@
 The Project using [Vcpkg](https://github.com/microsoft/vcpkg) to build. Following the steps in [Readme](https://github.com/microsoft/vcpkg/blob/master/README.md) to build and install vcpkg. Then install packages and hook up user-wide integration:
 
 ```sh
-vcpkg install sdl2 lua sdl2-image
+vcpkg install sdl2 lua sol2
 vcpkg integrate install
 ```
 

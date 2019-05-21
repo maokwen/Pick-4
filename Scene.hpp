@@ -32,7 +32,7 @@ class ConsoleScene final : public Scene {
 public:
   static ConsoleScene& instance();
 
-  void print(const std::string& str, Color c = Color{0xff, 0xff, 0x00});
+  void print(const std::string& str, color c = 1);
   void exec(std::string command);
 
   scene_type run() override;
@@ -40,11 +40,17 @@ public:
 private:
   std::string input_buffer_;
 
-  struct {int x;int y;} cursor_;
+  struct {
+    int x;
+    int y;
+  } cursor_ = {0, 0};
 
-  scene_type next_;
+  scene_type next_ = scene_exit;
 };
 
+/* 
+ * DisplayScene is a scene for drawing graphic for user scripts
+ */
 class DisplayScene final : public Scene {
   DisplayScene();
   ~DisplayScene();
@@ -54,9 +60,9 @@ public:
   void set_update(const std::function<void()>&);
   void set_draw(const std::function<void()>&);
 
-  void pixel(int x0, int y0, Color c);
-  void line(int x0, int y0, int x1, int y1, Color c);
-  void circle(int x, int y, int r, Color c);
+  void pixel(int x0, int y0, color c) const;
+  void line(int x0, int y0, int x1, int y1, color c) const;
+  void circle(int x, int y, int r, color c) const;
 
   scene_type run() override;
   void cls() override;

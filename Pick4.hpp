@@ -1,15 +1,6 @@
 #pragma once
-#include <functional>
-#include <string>
-// SDL headers
 #include <SDL.h>
-// lua headers
-#include <lauxlib.h>
-#include <lua.h>
-#include <luaconf.h>
-#include <lualib.h>
-
-#include "Color.hpp"
+#include <sol.hpp>
 #include "Scene.hpp"
 
 class Pick4 {
@@ -26,6 +17,12 @@ public:
   static const int screen_width = 128;
   static const int screen_height = 128;
 
+  sol::state lua;
+  void set_script(const std::string& script);
+  bool load_script();
+  bool run_draw_script();
+  bool run_update_script();
+
 private:
   void close();
 
@@ -33,4 +30,6 @@ private:
   SDL_Renderer* renderer_ = nullptr;
   ConsoleScene& console_;
   DisplayScene& display_;
+
+  std::string lua_script_;
 };

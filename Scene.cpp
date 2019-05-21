@@ -1,7 +1,9 @@
-#include "Scene.hpp"
 #include <iostream>
+#include <sstream>
+#include <vector>
 #include "Pick4.hpp"
 #include "BitmapFont.hpp"
+#include "Scene.hpp"
 
 Scene::Scene() {}
 
@@ -14,52 +16,48 @@ void Scene::cls() {
 
 bool Scene::init(SDL_Renderer* renderer) {
   renderer_ = renderer;
-  target_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-                              Pick4::screen_width,
+  target_ = SDL_CreateTexture(renderer_, SDL_PIXELFORMAT_RGBA8888,
+                              SDL_TEXTUREACCESS_TARGET, Pick4::screen_width,
                               Pick4::screen_height);
-  if (!target_) return false;
-  //SDL_SetRenderTarget(renderer_, target_);
-  return true;
+  return target_ != nullptr;
 }
 
-ConsoleScene::ConsoleScene(): Scene() {}
-ConsoleScene::~ConsoleScene() = default;
+ConsoleScene::ConsoleScene() : Scene() {}
+
+ConsoleScene::~ConsoleScene() {}
 
 ConsoleScene& ConsoleScene::instance() {
   static ConsoleScene instance;
   return instance;
 }
 
-void ConsoleScene::print(const std::string& str, Color c) {
-  SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
+void ConsoleScene::print(const std::string& str, color c) {
+  SDL_Color col = Color::toSdlColor(c);
+  SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
   auto font = BitmapFont(renderer_);
 
   for (auto ch : str) {
-    if (ch == '\n' || cursor_.x >= Pick4::screen_height - BitmapFont::chat_size) {
+    if (ch == '\n' ||
+      cursor_.x >= Pick4::screen_height - BitmapFont::chat_size) {
       cursor_.x = 0;
       cursor_.y += BitmapFont::chat_size;
     }
-    else {
-      cursor_.x += BitmapFont::chat_size;
-    }
+    else { cursor_.x += BitmapFont::chat_size; }
 
     font.render(cursor_.x, cursor_.y, ch);
   }
 }
 
-
 void ConsoleScene::exec(std::string command) {
   std::vector<std::string> argc;
 
-  if (command.empty())return;
+  if (command.empty()) return;
 
   std::string buf;
   std::stringstream ss(command);
   while (ss >> buf) argc.push_back(command);
 
-  if (argc[0] == "cls") {
-    cls();
-  }
+  if (argc[0] == "cls") { cls(); }
   else if (argc[0] == "run") { next_ = scene_display; }
   else {
     print("\nCommand not found.");
@@ -73,7 +71,6 @@ scene_type ConsoleScene::run() {
   SDL_SetRenderTarget(renderer_, target_);
   cls();
   SDL_StartTextInput();
-
 
   SDL_Event event;
   for (next_ = scene_console; next_ == scene_console;) {
@@ -105,7 +102,7 @@ scene_type ConsoleScene::run() {
         case SDLK_ESCAPE:
           next_ = scene_editor;
           break;
-        case SDLK_RETURN: 
+        case SDLK_RETURN:
           std::cout << "ENTER" << std::endl;
           exec(input_buffer_);
           break;
@@ -122,7 +119,6 @@ scene_type ConsoleScene::run() {
   return next_;
 }
 
-
 void ConsoleScene::cls() {
   Scene::cls();
 
@@ -131,7 +127,7 @@ void ConsoleScene::cls() {
   print(">");
 }
 
-DisplayScene::DisplayScene(): Scene() {}
+DisplayScene::DisplayScene() : Scene() {}
 DisplayScene::~DisplayScene() = default;
 
 DisplayScene& DisplayScene::instance() {
@@ -142,13 +138,15 @@ DisplayScene& DisplayScene::instance() {
 void DisplayScene::set_update(const std::function<void()>& update) { update_ = update; }
 void DisplayScene::set_draw(const std::function<void()>& draw) { draw_ = draw; }
 
-void DisplayScene::pixel(int x0, int y0, Color c) {
-  SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
+void DisplayScene::pixel(int x0, int y0, color c) const {
+  SDL_Color col = Color::toSdlColor(c);
+  SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
   SDL_RenderDrawPoint(renderer_, x0, y0);
 }
 
-void DisplayScene::line(int x0, int y0, int x1, int y1, Color c) {
-  SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
+void DisplayScene::line(int x0, int y0, int x1, int y1, color c) const {
+  SDL_Color col = Color::toSdlColor(c);
+  SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
   int dx = x1 - x0, dy = y1 - y0;
 
   int step = std::abs(dx) > std::abs(dy) ? std::abs(dx) : std::abs(dy);
@@ -161,8 +159,9 @@ void DisplayScene::line(int x0, int y0, int x1, int y1, Color c) {
   }
 }
 
-void DisplayScene::circle(int x, int y, int r, Color c) {
-  SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
+void DisplayScene::circle(int x, int y, int r, color c) const {
+  SDL_Color col = Color::toSdlColor(c);
+  SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
 
   const int32_t diameter = (r * 2);
 
@@ -198,8 +197,10 @@ void DisplayScene::circle(int x, int y, int r, Color c) {
 }
 
 scene_type DisplayScene::run() {
+  Pick4::instance().load_script();
+
   SDL_SetRenderTarget(renderer_, target_);
-  draw_();
+  Pick4::instance().run_draw_script();
   SDL_SetRenderTarget(renderer_, nullptr);
 
   bool exit = false;
@@ -208,7 +209,9 @@ scene_type DisplayScene::run() {
     SDL_Delay(20);
 
     SDL_SetRenderTarget(renderer_, target_);
-    update_();
+
+    Pick4::instance().run_update_script();
+
     SDL_SetRenderTarget(renderer_, nullptr);
     SDL_RenderCopy(renderer_, target_, nullptr, nullptr);
     SDL_RenderPresent(renderer_);

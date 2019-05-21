@@ -1,7 +1,5 @@
-#include <cstddef>
-#include <string>
-#include "BitmapFont.hpp"
 #include <iostream>
+#include "BitmapFont.hpp"
 
 BitmapFont::BitmapFont(SDL_Renderer* renderer) : renderer_(renderer) {
   const auto bitmap = SDL_LoadBMP("font.bmp");
