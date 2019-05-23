@@ -2,7 +2,8 @@
 #include <functional>
 #include <string>
 #include <SDL.h>
-#include "Color.hpp"
+#include "define.hpp"
+#include "FileSystem.hpp"
 
 enum scene_type {
   scene_exit,

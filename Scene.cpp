@@ -4,6 +4,7 @@
 #include "Pick4.hpp"
 #include "BitmapFont.hpp"
 #include "Scene.hpp"
+#include "FileSystem.hpp"
 
 Scene::Scene() {}
 
@@ -32,7 +33,7 @@ ConsoleScene& ConsoleScene::instance() {
 }
 
 void ConsoleScene::print(const std::string& str, color c) {
-  SDL_Color col = Color::toSdlColor(c);
+  SDL_Color col = to_sdl_color(c);
   SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
   auto font = BitmapFont(renderer_);
 
@@ -59,10 +60,15 @@ void ConsoleScene::exec(std::string command) {
 
   if (argc[0] == "cls") { cls(); }
   else if (argc[0] == "run") { next_ = scene_display; }
+  else if (argc[0] == "ls") {
+    //std::string dirs = fs_.ls();
+    print("\n");
+    print(FileSystem::ls());
+  }
   else {
     print("\nCommand not found.");
-    print("\n>");
   }
+  print("\n>");
 
   input_buffer_.clear();
 }
@@ -139,13 +145,13 @@ void DisplayScene::set_update(const std::function<void()>& update) { update_ = u
 void DisplayScene::set_draw(const std::function<void()>& draw) { draw_ = draw; }
 
 void DisplayScene::pixel(int x0, int y0, color c) const {
-  SDL_Color col = Color::toSdlColor(c);
+  SDL_Color col = to_sdl_color(c);
   SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
   SDL_RenderDrawPoint(renderer_, x0, y0);
 }
 
 void DisplayScene::line(int x0, int y0, int x1, int y1, color c) const {
-  SDL_Color col = Color::toSdlColor(c);
+  SDL_Color col = to_sdl_color(c);
   SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
   int dx = x1 - x0, dy = y1 - y0;
 
@@ -160,7 +166,7 @@ void DisplayScene::line(int x0, int y0, int x1, int y1, color c) const {
 }
 
 void DisplayScene::circle(int x, int y, int r, color c) const {
-  SDL_Color col = Color::toSdlColor(c);
+  SDL_Color col = to_sdl_color(c);
   SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);
 
   const int32_t diameter = (r * 2);

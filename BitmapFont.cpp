@@ -1,8 +1,10 @@
 #include <iostream>
 #include "BitmapFont.hpp"
+#include "FileSystem.hpp"
 
 BitmapFont::BitmapFont(SDL_Renderer* renderer) : renderer_(renderer) {
-  const auto bitmap = SDL_LoadBMP("font.bmp");
+  auto fontfile = (FileSystem::asserts() / "font.bmp").string();
+  const auto bitmap = SDL_LoadBMP(fontfile.c_str());
   if (!bitmap) {
     std::cout << "Create Surface From BMP File: " << SDL_GetError() << std::endl;
     return;

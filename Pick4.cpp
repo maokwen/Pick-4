@@ -32,10 +32,14 @@ Pick4::Pick4(): console_(ConsoleScene::instance()), display_(DisplayScene::insta
     return;
   }
 
+  FileSystem::init();
+
   lua.set_function("cls", []() { DisplayScene::instance().cls(); });
   lua.set_function("pixel", [](int x,int y,int c) { DisplayScene::instance().pixel(x, y, c); });
   lua.set_function(
     "line", [](int x0,int y0,int x1, int y1, int c) { DisplayScene::instance().line(x0, y0, x1, y1, c); });
+
+  lua_script_ = FileSystem::load("hello").code;
 }
 
 Pick4& Pick4::instance() {

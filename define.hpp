@@ -1,12 +1,22 @@
 #pragma once
+#include <cstdint>
 #include <SDL.h>
+#include <string>
+#include <vector>
 
-/* color: 4bit */
-using color = uint8_t;
+using color = uint8_t; /* color: 4bit */
 
-namespace Color {
-  static SDL_Color toSdlColor(color c) {
-    uint8_t col = c & 0xf;
+using bank = struct {
+  std::string title;
+  // todo: sprite, map, sfx, music...
+};
+
+using cartridge = struct {
+  std::string code;
+};
+
+static SDL_Color to_sdl_color(const color c) {
+    const uint8_t col = c & 0xf;
     switch (col) {
     case 0x1: return SDL_Color{0xff, 0xff, 0xff, 0xff}; // white
     case 0x2: return SDL_Color{0xff, 0x00, 0x00, 0xff}; // red
@@ -27,4 +37,4 @@ namespace Color {
     default : return SDL_Color{0x00, 0x00, 0x00, 0x00}; // empty
     }
   }
-}
+
