@@ -14,8 +14,8 @@ public:
   void run();
   static long time();
 
-  static const int screen_width = 128;
-  static const int screen_height = 128;
+  static const int screen_width = 256;
+  static const int screen_height = 256;
 
   sol::state lua;
   void set_script(const std::string& script);
