@@ -11,8 +11,8 @@ Pick4::Pick4(): console_(ConsoleScene::instance()), display_(DisplayScene::insta
     return;
   }
   window_ = SDL_CreateWindow("Pick-4", SDL_WINDOWPOS_UNDEFINED,
-                             SDL_WINDOWPOS_UNDEFINED, screen_width << 1,
-                             screen_height << 1, SDL_WINDOW_SHOWN);
+                             SDL_WINDOWPOS_UNDEFINED, screen_width << 2,
+                             screen_height << 2, SDL_WINDOW_SHOWN);
   if (!window_) {
     printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
     return;
