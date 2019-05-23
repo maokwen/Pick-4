@@ -39,11 +39,11 @@ void ConsoleScene::print(const std::string& str, color c) {
 
   for (auto ch : str) {
     if (ch == '\n' ||
-      cursor_.x >= Pick4::screen_height - BitmapFont::chat_size) {
+      cursor_.x >= Pick4::screen_width - BitmapFont::char_width) {
       cursor_.x = 0;
-      cursor_.y += BitmapFont::chat_size;
+      cursor_.y += BitmapFont::char_height;
     }
-    else { cursor_.x += BitmapFont::chat_size; }
+    else { cursor_.x += BitmapFont::char_width; }
 
     font.render(cursor_.x, cursor_.y, ch);
   }
@@ -95,8 +95,8 @@ scene_type ConsoleScene::run() {
         break;
       case SDL_TEXTINPUT: {
         SDL_SetRenderTarget(renderer_, target_);
-        if (cursor_.x >= Pick4::screen_width - 2 * BitmapFont::chat_size) {
-          cursor_.x = 0, cursor_.y += BitmapFont::chat_size;
+        if (cursor_.x >= Pick4::screen_width - 2 * BitmapFont::char_width) {
+          cursor_.x = 0, cursor_.y += BitmapFont::char_height;
         }
         print(std::string(event.text.text));
         input_buffer_ += event.text.text;

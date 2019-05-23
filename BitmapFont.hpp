@@ -7,7 +7,8 @@ public:
 
   void render(const int x, const int y, const char ch) const;
 
-  static const int chat_size = 7;
+  static const int char_width = 6;
+  static const int char_height = 7;
 
 private:
   SDL_Texture* texture_;
