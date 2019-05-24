@@ -20,6 +20,8 @@ add_executable(Pick4
   test.cpp
   Pick4.cpp
   Scene.cpp
+  DisplayScene.cpp
+  ConsoleScene.cpp
   BitmapFont.cpp
   FileSystem.cpp
 )

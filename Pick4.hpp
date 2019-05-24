@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <sol.hpp>
 #include "Scene.hpp"
+#include "DisplayScene.hpp"
+#include "ConsoleScene.hpp"
 
 class Pick4 {
   Pick4();
