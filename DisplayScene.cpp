@@ -11,9 +11,6 @@ DisplayScene& DisplayScene::instance() {
   return instance;
 }
 
-void DisplayScene::set_update(const std::function<void()>& update) { update_ = update; }
-void DisplayScene::set_draw(const std::function<void()>& draw) { draw_ = draw; }
-
 void DisplayScene::pixel(int x0, int y0, color c) const {
   SDL_Color col = to_sdl_color(c);
   SDL_SetRenderDrawColor(renderer_, col.r, col.g, col.b, col.a);

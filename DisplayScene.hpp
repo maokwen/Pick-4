@@ -12,9 +12,6 @@ class DisplayScene : public Scene {
 public:
   static DisplayScene& instance();
 
-  void set_update(const std::function<void()>&);
-  void set_draw(const std::function<void()>&);
-
   void pixel(int x0, int y0, color c) const;
   void line(int x0, int y0, int x1, int y1, color c) const;
   void circle(int x, int y, int r, color c) const;

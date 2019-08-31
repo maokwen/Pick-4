@@ -14,7 +14,7 @@ private:
   SDL_Texture* texture_;
   SDL_Renderer* renderer_;
 
-  SDL_Rect chars_table_[256]{};
+  SDL_Rect chars_table_[176]{};
 
   void build();
 };

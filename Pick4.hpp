@@ -4,6 +4,7 @@
 #include "Scene.hpp"
 #include "DisplayScene.hpp"
 #include "ConsoleScene.hpp"
+#include "P4Memory.hpp"
 
 class Pick4 {
   Pick4();
@@ -25,6 +26,8 @@ public:
   bool run_draw_script();
   bool run_update_script();
 
+  P4Memory mem;
+
 private:
   void close();
 
@@ -34,4 +37,5 @@ private:
   DisplayScene& display_;
 
   std::string lua_script_;
+  
 };

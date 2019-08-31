@@ -6,6 +6,10 @@
 
 using color = uint8_t; /* color: 4bit */
 
+using rect = struct {
+  uint8_t x, y, w, h;
+};
+
 using bank = struct {
   std::string title;
   // todo: sprite, map, sfx, music...

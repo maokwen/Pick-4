@@ -3,10 +3,11 @@
 #include "Pick4.hpp"
 #include "DisplayScene.hpp"
 #include "ConsoleScene.hpp"
+#include "P4Memory.hpp"
 
 using std::string;
 
-Pick4::Pick4(): console_(ConsoleScene::instance()), display_(DisplayScene::instance()) {
+Pick4::Pick4(): console_(ConsoleScene::instance()), display_(DisplayScene::instance()), mem(P4Memory()) {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
     return;

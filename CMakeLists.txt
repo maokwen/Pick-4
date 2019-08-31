@@ -24,12 +24,13 @@ add_executable(Pick4
   ConsoleScene.cpp
   BitmapFont.cpp
   FileSystem.cpp
+  P4Memory.cpp
 )
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/asserts/font.bmp
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/asserts/hello.p4
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/asserts/font.bmp
+#     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/asserts/hello.p4
+#     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
 
 target_link_libraries(Pick4 PRIVATE SDL2::SDL2 SDL2::SDL2main ${LUA_LIBRARIES} sol2)
 
